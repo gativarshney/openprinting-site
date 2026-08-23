@@ -68,6 +68,13 @@ describe("grounding: every rendered claim traces to fixture data", () => {
                 knownScores.has(Math.round(card.score * 100)),
                 `"${testCase.q}" rendered a similarity score not present in any shard`
               ).toBe(true)
+              // A driver total is not a support-quality signal, so it must
+              // never ride alongside a similarity score on a recommendation
+              // card (PR #224 review decision).
+              expect(
+                card.driverCount,
+                `"${testCase.q}" put a driver count on a recommendation card`
+              ).toBeUndefined()
             }
           }
         }
@@ -103,6 +110,45 @@ describe("honest language for key flows", () => {
     expect(text).toContain("Preferred Linux driver: hplip")
     expect(text).toContain("Linux support grade is Perfect")
     expect(text).toContain("not a promise")
+  })
+
+  it("recommendation cards never carry a driver count, on either recommendation flow", async () => {
+    for (const query of ["what printers are similar to this?", "why was hp laserjet 4p recommended"]) {
+      const turn = await runAssistant(query, LJ4_CONTEXT, data)
+      const cards = turn.plan.blocks.filter(block => block.kind === "printer-cards")
+      expect(cards.length, `"${query}" rendered no cards to check`).toBeGreaterThan(0)
+      for (const block of cards) {
+        for (const card of block.printers) {
+          expect(card.score, `"${query}" card ${card.id} is not recommendation-backed`).toBeDefined()
+          expect(card.driverCount, `"${query}" card ${card.id} showed a driver count`).toBeUndefined()
+        }
+      }
+      expect(allText(turn.plan)).not.toMatch(/listed drivers/)
+    }
+  })
+
+  it("catalogue-backed search cards still show driver counts", async () => {
+    // The badge is dropped from recommendation cards specifically, not removed
+    // from the assistant: a directory-style result still reports the total.
+    const turn = await runAssistant("find colour laser printers", HOME_CONTEXT, data)
+    const cards = turn.plan.blocks.find(block => block.kind === "printer-cards")
+    expect(cards).toBeDefined()
+    if (cards && cards.kind === "printer-cards") {
+      expect(cards.printers.some(card => typeof card.driverCount === "number")).toBe(true)
+    }
+  })
+
+  it("only an explicit driver-options comparison reports driver totals", async () => {
+    const turn = await runAssistant("similar printers with better driver options", LJ4_CONTEXT, data)
+    const text = allText(turn.plan)
+    // Anchor total comes from the catalogue, not from the recommendation shard.
+    expect(text).toContain("list more drivers than its 6")
+    const cards = turn.plan.blocks.filter(block => block.kind === "printer-cards")
+    for (const block of cards) {
+      for (const card of block.printers) {
+        expect(card.driverCount).toBeUndefined()
+      }
+    }
   })
 
   it("similar-printers responses state that similarity is not a compatibility promise", async () => {

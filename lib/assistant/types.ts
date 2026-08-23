@@ -153,7 +153,6 @@ export interface RecommendationEntry {
   model?: string
   status: string
   type: string
-  driverCount: number
 }
 
 export type Execution =

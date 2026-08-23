@@ -68,6 +68,11 @@ function summaryFeatures(summary: PrinterSummary): string[] {
   return features
 }
 
+// A recommendation card deliberately carries no driver count: a high driver
+// total is not a measure of good support, so it must never sit next to a
+// similarity score as though it were one (docs/foomatic-data-formats.md).
+// Driver counts belong on catalogue-backed cards (summaryCard) and in answers
+// to an explicit "better in driver options" question.
 function recommendationCard(entry: RecommendationEntry): PrinterCardData {
   const tier = confidenceTier(entry.score)
   return {
@@ -76,7 +81,6 @@ function recommendationCard(entry: RecommendationEntry): PrinterCardData {
     model: entry.model ?? entry.id,
     status: entry.status,
     type: entry.type !== "unknown" ? entry.type : undefined,
-    driverCount: entry.driverCount,
     score: entry.score,
     tierLabel: tier.label,
     tierTone: tier.tone,
@@ -248,7 +252,7 @@ export function buildResponse(execution: Execution): ResponsePlan {
       return buildComparison(execution.a, execution.b)
 
     case "explanation":
-      return buildExplanation(execution.source, execution.entry)
+      return buildExplanation(execution)
 
     case "explanation-none":
       return {
@@ -557,7 +561,8 @@ function buildComparison(a: Printer, b: Printer): ResponsePlan {
   }
 }
 
-function buildExplanation(source: PrinterSummary, entry: RecommendationEntry): ResponsePlan {
+function buildExplanation(execution: Extract<Execution, { kind: "explanation" }>): ResponsePlan {
+  const { source, entry } = execution
   const sourceName = printerName(source)
   const entryName = `${entry.manufacturer ?? ""} ${entry.model ?? entry.id}`.trim()
   const tier = confidenceTier(entry.score)
@@ -565,8 +570,7 @@ function buildExplanation(source: PrinterSummary, entry: RecommendationEntry): R
     text(
       `${entryName} appears in ${sourceName}'s similar-printers list with a ${similarityPercent(entry.score)} score, ` +
         `in the "${tier.label}" tier. The score is a comparison of recorded printer features - it is not a promise that ` +
-        `one printer can replace the other. ${entryName}'s own Foomatic Linux support grade is ${entry.status}, with ` +
-        `${entry.driverCount} listed drivers.`
+        `one printer can replace the other. ${entryName}'s own Foomatic Linux support grade is ${entry.status}.`
     ),
   ]
   if (entry.sharedFeatures.length > 0) {

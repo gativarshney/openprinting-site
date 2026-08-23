@@ -478,7 +478,10 @@ async function executeSimilar(
       entry => entry.status !== "Unknown" && (STATUS_RANK[entry.status] ?? 0) > sourceRank
     )
   } else if (better === "drivers") {
-    filtered = filtered.filter(entry => entry.driverCount > (source.driverCount ?? 0))
+    // The shard carries no driver total, so the count comes from the local
+    // catalogue - the same lookup the resolution arm below uses.
+    const anchorDrivers = source.driverCount ?? 0
+    filtered = filtered.filter(entry => (byId.get(entry.id)?.driverCount ?? 0) > anchorDrivers)
   } else if (better === "resolution") {
     sourceMaxDpi = typeof source.maxDpi === "number" ? source.maxDpi : null
     if (sourceMaxDpi === null) {

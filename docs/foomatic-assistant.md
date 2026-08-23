@@ -94,7 +94,7 @@ Values live in `lib/assistant/constants.ts`; `yarn assistant:eval` fails if this
 
 ## Testing
 
-- `lib/assistant/__tests__/` — always-run fixture suites: a 156-utterance natural-language corpus (`corpus.ts`) pinning intents and parse details, entity-resolution cases, execution-state semantics (unknown-never-false, duplex, relaxations, better-dimensions), and grounding property tests over rendered responses (every card id and similarity percentage must trace to input data; banned terminology can never appear).
+- `lib/assistant/__tests__/` — always-run fixture suites: a 187-utterance natural-language corpus (`corpus.ts`) pinning intents and parse details, entity-resolution cases, execution-state semantics (unknown-never-false, duplex, relaxations, better-dimensions), and grounding property tests over rendered responses (every card id and similarity percentage must trace to input data; banned terminology can never appear).
 - `lib/assistant/__tests__/assistant-artifact.test.ts` — the same engine against the real generated artifacts (skipped automatically when they are absent, e.g. CI's pre-generate test run).
 - `tools/assistant-eval/run.ts` (`yarn assistant:eval`) — corpus accuracy, a full grounding sweep, the approved end-to-end flows, latency and artifact-size measurement, and the tunables/wording drift gates. Requires generated data, like `tools/eval/`.
 

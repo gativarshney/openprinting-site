@@ -206,6 +206,21 @@ describe.skipIf(!present)("assistant against real foomatic artifacts", () => {
     expect(better.execution.kind).toBe("clarify")
   })
 
+  it("real recommendation cards never show a driver count", async () => {
+    // The real shards carry no driver total and the catalogue's must not be
+    // substituted in: a driver count is not a measure of support quality.
+    for (const query of ["what printers are similar to this?", "why was HP LaserJet 4P recommended"]) {
+      const turn = await runAssistant(query, lj4Context, data)
+      for (const block of turn.plan.blocks) {
+        if (block.kind !== "printer-cards") continue
+        for (const card of block.printers) {
+          if (card.score !== undefined) expect(card.driverCount).toBeUndefined()
+        }
+      }
+      expect(planText(turn.plan)).not.toMatch(/listed drivers/)
+    }
+  })
+
   it("every similarity percentage rendered anywhere matches a real shard score", async () => {
     const shard = await data.getRecommendations("HP-LaserJet_4")
     const scores = new Set(shard.map(entry => Math.round(entry.score * 100)))

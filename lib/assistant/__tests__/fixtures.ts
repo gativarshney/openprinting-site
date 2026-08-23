@@ -64,39 +64,39 @@ export const RECOMMENDATIONS: Record<string, RecommendationEntry[]> = {
   "HP-LaserJet_4": [
     {
       id: "HP-LaserJet_4P", score: 0.895, manufacturer: "HP", model: "LaserJet 4P",
-      status: "Perfect", type: "laser", driverCount: 6,
+      status: "Perfect", type: "laser",
       sharedFeatures: ["Preferred Linux driver: hplip", "Laser printer", "PCL 5e", "Similar resolution (300-600 dpi)", "Excellent Linux driver support"],
     },
     {
       id: "HP-LaserJet_5", score: 0.885, manufacturer: "HP", model: "LaserJet 5",
-      status: "Perfect", type: "laser", driverCount: 8,
+      status: "Perfect", type: "laser",
       sharedFeatures: ["Preferred Linux driver: hplip", "Laser printer", "PCL 5e"],
     },
     {
       id: "Okidata-OL400", score: 0.61, manufacturer: "Okidata", model: "OL400",
-      status: "Mostly", type: "laser", driverCount: 2,
+      status: "Mostly", type: "laser",
       sharedFeatures: ["Laser printer"],
     },
     {
       id: "Xerox-Phaser_6100", score: 0.52, manufacturer: "Xerox", model: "Phaser 6100",
-      status: "Perfect", type: "laser", driverCount: 4,
+      status: "Perfect", type: "laser",
       sharedFeatures: ["Laser printer"],
     },
   ],
   "Canon-BJC-210": [
     {
       id: "Epson-Stylus_Color", score: 0.71, manufacturer: "Epson", model: "Stylus Color",
-      status: "Perfect", type: "inkjet", driverCount: 5,
+      status: "Perfect", type: "inkjet",
       sharedFeatures: ["Inkjet printer", "Color printing"],
     },
     {
       id: "HP-DeskJet_560C", score: 0.55, manufacturer: "HP", model: "DeskJet 560C",
-      status: "Perfect", type: "inkjet", driverCount: 6,
+      status: "Perfect", type: "inkjet",
       sharedFeatures: ["Inkjet printer", "Color printing"],
     },
     {
       id: "IBM-4019", score: 0.4, manufacturer: "IBM", model: "4019",
-      status: "Unknown", type: "laser", driverCount: 2,
+      status: "Unknown", type: "laser",
       sharedFeatures: [],
     },
   ],
